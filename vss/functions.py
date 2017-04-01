@@ -1,8 +1,8 @@
 """
 A set of high-level functions to ease the use of Microsoft Visual SourceSafe.
 """
-
-from vss import VSS
+import os
+from .vss_wrapper import VSS
 
 def checkout(repository_path, vss_project_path, local_path, ss_path=None):
     """
@@ -47,3 +47,50 @@ def get(repository_path, vss_project_path, local_path, ss_path=None):
     vss = VSS(repository_path, ss_path)
 
     return vss.get(vss_project_path, recursive=True, get_folder=local_path, output='error', ignore='all')
+
+def delete(repository_path, vss_project_path, ss_path=None):
+    """
+    delete file
+
+    Return the standard output.
+    """
+
+    vss = VSS(repository_path, ss_path)
+
+    return vss.delete(vss_project_path, output='error', ignore='all')
+
+def add(repository_path, vss_project_path, local_path, ss_path=None):
+    """
+    add file
+    vss_project_path(to the deepest folder)
+    Return the standard output.
+    """
+
+    vss = VSS(repository_path, ss_path)
+
+    vss.set_current_project(vss_project_path)
+
+    return vss.add(local_path, recursive=True, output='error', ignore='all')
+
+def exists(repository_path, vss_project_path, ss_path=None):
+    """
+    exists for True
+
+    Return the standard output.
+    """
+    vss = VSS(repository_path, ss_path)
+
+    return 0 == vss.properties(vss_project_path)
+
+def mkdir(repository_path, vss_project_path, ss_path=None):
+    """
+    make dir
+    """
+    vss = VSS(repository_path, ss_path)
+    return vss.create(vss_project_path, output='error', ignore='all')
+
+def rename(repository_path, vss_project_path, vss_project_new_path, ss_path=None):
+    """ rename a item """
+    vss = VSS(repository_path, ss_path)
+    return vss.rename(vss_project_path, vss_project_new_path, output='error', ignore='all')
+

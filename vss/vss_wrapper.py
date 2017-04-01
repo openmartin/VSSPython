@@ -2,7 +2,7 @@
 A Microsoft Visual SourceSafe class.
 """
 
-import tools
+from .tools import get_ss_path
 
 import os
 import subprocess
@@ -12,13 +12,18 @@ class VSS(object):
     A VSS class that handles all low-level operations on a VSS repository.
     """
 
-    def __init__(self, repository_path=None, ss_path=None):
+    def __init__(self, repository_path=None, ss_path=None, user=None, password=None):
         """
         Create a VSS instance attached to a specified repository_path repository.
+        repository_path set SSDIR environment variable
+        user set SSUSER environment variable
+        password set SSPWD environment variable
         """
 
         self.repository_path = repository_path
-        self.ss_path = ss_path or tools.get_ss_path()
+        self.ss_path = ss_path or get_ss_path()
+        self.user = user
+        self.password = password
 
     def __execute(self, argv):
         """
@@ -32,17 +37,23 @@ class VSS(object):
         if self.repository_path:
             env['SSDIR'] = self.repository_path
 
+        if self.user:
+            env['SSUSER'] = self.user
+
+        if self.password:
+            env['SSPWD'] = self.password
+
         if env.get('VSS_PYTHON_TRACE', None):
 
             if env.get('VSS_PYTHON_TRACE', None) == 'all':
-                print 'Environment:'
+                print('Environment:')
 
                 for key, value in env.items():
-                    print '%s: %s' % (key, value)
+                    print('%s: %s' % (key, value))
 
-            print ' '.join([self.ss_path] + argv)
+            print(' '.join([self.ss_path] + argv))
 
-        return subprocess.check_output([self.ss_path] + argv, env=env)
+        return subprocess.call([self.ss_path] + argv, env=env, timeout=10)
 
     def __to_options_list(self, options):
         """
@@ -346,7 +357,7 @@ class VSS(object):
         if not isinstance(files, list):
             files = [str(files)]
 
-        return self.__execute(['Diff'] + items + self.__to_options_list(options))
+        return self.__execute(['Diff'] + files + self.__to_options_list(options))
 
     def dir(self, path, **options):
         """

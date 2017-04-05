@@ -37,6 +37,9 @@ class GitToVss:
                 else:
                     vss.mkdir(SS_DIR, os.path.join(VSS_ROOT, entry.path), SS_PATH)
 
+                # vss_workspace_root mkdir
+                os.makedirs(os.path.join(VSS_WORKSPACE_ROOT, entry.path), exist_ok=True)
+
         for entry in headtree.traverse():
             if entry.type == 'blob':
                 print(entry.path)
@@ -47,6 +50,7 @@ class GitToVss:
                     self.copy_one_file(entry.path)
                     vss.checkin(SS_DIR, vss_item_path, local_dir, SS_PATH)
                 else:
+                    self.copy_one_file(entry.path)
                     vss_dir = os.path.join(VSS_ROOT, os.path.dirname(entry.path))
                     vss.add(SS_DIR, vss_dir, os.path.join(VSS_WORKSPACE_ROOT, entry.path), SS_PATH)
 
@@ -65,7 +69,7 @@ class GitToVss:
         for adiff in file_diff.iter_change_type('D'):  # delete
             print("delete " + adiff.a_path)
             vss_item_path = os.path.join(VSS_ROOT, adiff.a_path)
-            self.delete_on_file(adiff.a_path)
+            self.delete_one_file(adiff.a_path)
             vss.delete(SS_DIR, vss_item_path, SS_PATH)
 
         for adiff in file_diff.iter_change_type('R'):  # rename
@@ -93,7 +97,7 @@ class GitToVss:
         else:
             shutil.copy2(source_path, target_path)
 
-    def delete_on_file(self, path):
+    def delete_one_file(self, path):
         target_path = os.path.join(VSS_WORKSPACE_ROOT, path)
         if os.path.isdir(target_path):
             os.rmdir(target_path)

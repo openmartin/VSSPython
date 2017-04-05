@@ -126,6 +126,7 @@ if __name__ == '__main__':
     MODE = args.mode
 
     gts = GitToVss(SS_PATH, SS_DIR, GIT_ROOT, VSS_ROOT, VSS_WORKSPACE_ROOT, USER, PWD)
+    gts.setup_env()
 
     if MODE == 'full':
         gts.full()

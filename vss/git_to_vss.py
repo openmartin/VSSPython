@@ -21,6 +21,8 @@ class GitToVss:
     def setup_env(self):
         os.putenv("SSUSER", self.USER)
         os.putenv("SSPWD", self.PWD)
+        os.environ['SSUSER'] = self.USER
+        os.environ['SSPWD'] = self.PWD
 
     def full(self):
         repo = git.Repo(GIT_ROOT)
@@ -124,6 +126,15 @@ if __name__ == '__main__':
     USER = args.user
     PWD = args.password
     MODE = args.mode
+
+    print("SS_PATH: "+SS_PATH)
+    print("SS_DIR: " + SS_DIR)
+    print("GIT_ROOT: " + GIT_ROOT)
+    print("VSS_ROOT: " + VSS_ROOT)
+    print("VSS_WORKSPACE_ROOT: " + VSS_WORKSPACE_ROOT)
+    print("USER: " + USER)
+    print("PWD: " + PWD)
+    print("MODE: " + MODE)
 
     gts = GitToVss(SS_PATH, SS_DIR, GIT_ROOT, VSS_ROOT, VSS_WORKSPACE_ROOT, USER, PWD)
     gts.setup_env()
